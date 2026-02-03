@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, title, filter, setFilter
           <Menu className="w-6 h-6 text-slate-600" />
         </button>
         <img 
-          src="/logo/WhatsApp Image 2026-02-02 at 20.25.00.jpeg" 
+          src="/logo/logo-zahav.jpeg" 
           alt="Logo ZAHAV" 
           className="h-8 mr-4"
         />
