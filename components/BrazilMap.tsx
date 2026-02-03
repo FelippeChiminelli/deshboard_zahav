@@ -61,37 +61,37 @@ const STATE_NAMES: Record<string, string> = {
 // Ajustadas para posicionamento preciso sobre cada estado
 const STATE_SVG_COORDS: Record<string, { x: number; y: number }> = {
   // Norte
-  'RR': { x: 195, y: 55 },
-  'AP': { x: 340, y: 65 },
-  'AM': { x: 150, y: 140 },
-  'PA': { x: 330, y: 155 },
-  'AC': { x: 60, y: 210 },
-  'RO': { x: 145, y: 240 },
-  'TO': { x: 385, y: 245 },
+  'RR': { x: 200, y: 60 },
+  'AP': { x: 350, y: 65 },
+  'AM': { x: 165, y: 160 },
+  'PA': { x: 340, y: 165 },
+  'AC': { x: 68, y: 235 },
+  'RO': { x: 180, y: 265 },
+  'TO': { x: 400, y: 270 },
   // Nordeste
-  'MA': { x: 420, y: 155 },
-  'PI': { x: 450, y: 210 },
-  'CE': { x: 495, y: 160 },
-  'RN': { x: 530, y: 165 },
-  'PB': { x: 535, y: 190 },
-  'PE': { x: 520, y: 210 },
-  'AL': { x: 535, y: 235 },
-  'SE': { x: 515, y: 250 },
-  'BA': { x: 465, y: 300 },
+  'MA': { x: 450, y: 165 },
+  'PI': { x: 505, y: 195 },
+  'CE': { x: 545, y: 165 },
+  'RN': { x: 595, y: 170 },
+  'PB': { x: 585, y: 195 },
+  'PE': { x: 575, y: 210 },
+  'AL': { x: 595, y: 232 },
+  'SE': { x: 585, y: 245 },
+  'BA': { x: 520, y: 290 },
   // Centro-Oeste
-  'MT': { x: 240, y: 280 },
-  'GO': { x: 375, y: 330 },
-  'DF': { x: 410, y: 320 },
-  'MS': { x: 285, y: 390 },
+  'MT': { x: 265, y: 305 },
+  'GO': { x: 375, y: 340 },
+  'DF': { x: 415, y: 327 },
+  'MS': { x: 315, y: 415 },
   // Sudeste
-  'MG': { x: 440, y: 370 },
-  'ES': { x: 495, y: 385 },
-  'RJ': { x: 465, y: 425 },
-  'SP': { x: 375, y: 420 },
+  'MG': { x: 460, y: 390 },
+  'ES': { x: 520, y: 400 },
+  'RJ': { x: 490, y: 440 },
+  'SP': { x: 385, y: 435 },
   // Sul
-  'PR': { x: 350, y: 475 },
-  'SC': { x: 365, y: 520 },
-  'RS': { x: 325, y: 575 },
+  'PR': { x: 365, y: 480 },
+  'SC': { x: 375, y: 520 },
+  'RS': { x: 330, y: 565 },
 };
 
 // Converte coordenadas SVG para % do overlay (viewBox 0 0 612 639, meet em container quadrado)
@@ -277,7 +277,6 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
             {Object.entries(STATE_SVG_COORDS).map(([state, coords]) => {
               const position = svgToPercent(coords.x, coords.y);
               const volume = getStateVolume(state);
-              // Cor do texto: branco para estados com dados (fundo escuro), cinza para sem dados
               const hasData = volume > 0;
               const textColor = hasData ? '#1e3a5f' : '#94a3b8';
               

@@ -66,8 +66,8 @@ const TVLayout: React.FC<{
       {/* Header compacto para TV com logo e seletor de período */}
       <div className="flex justify-between items-center mb-2 shrink-0">
         <img 
-          src="/logo/Logo Primária Azul.svg" 
-          alt="Logo" 
+          src="/logo/WhatsApp Image 2026-02-02 at 20.25.00.jpeg" 
+          alt="Logo ZAHAV" 
           className="h-10"
         />
         <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">

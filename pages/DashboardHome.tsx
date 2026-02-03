@@ -96,101 +96,94 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
 
   return (
     <div className="h-full flex flex-col gap-3">
-      {/* Top Section: Revenue Goals */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shrink-0">
-        <div className="flex justify-between items-center mb-3">
-          <div>
-            <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: COLORS.black }}>
-              <TrendingUp className="w-5 h-5" style={{ color: COLORS.primary }} />
-              Meta de Crescimento Anual
-            </h2>
-            <p className="text-xs text-slate-500">Progresso em relação à meta de {filter.year}</p>
-          </div>
-          <div className="text-right">
-             <span className="text-2xl font-bold" style={{ color: COLORS.primary }}>{data.revenue.current}%</span>
-             <span className="text-xs text-slate-400 block">da meta anual</span>
-          </div>
-        </div>
-
-        <div className="relative pt-5 pb-1 px-2">
-          {/* Progress Track */}
-          <div className="h-3 bg-slate-100 rounded-full w-full overflow-hidden relative">
-            <div 
-              className="h-full transition-all duration-1000 ease-out relative"
-              style={{ 
-                width: `${getRevenueWidth(data.revenue.current)}%`,
-                background: `linear-gradient(to right, ${COLORS.primaryLighter}, ${COLORS.primary})`
-              }}
-            >
-                <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/30 animate-pulse"></div>
+      {/* Top Section: Meta + Indicadores de Tempo lado a lado */}
+      <div className="grid grid-cols-2 gap-3 shrink-0">
+        {/* Meta de Crescimento - 50% */}
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: COLORS.black }}>
+                <TrendingUp className="w-5 h-5" style={{ color: COLORS.primary }} />
+                Meta de Crescimento Anual
+              </h2>
+              <p className="text-xs text-slate-500">Progresso em relação à meta de {filter.year}</p>
+            </div>
+            <div className="text-right">
+               <span className="text-2xl font-bold" style={{ color: COLORS.primary }}>{data.revenue.current}%</span>
+               <span className="text-xs text-slate-400 block">da meta anual</span>
             </div>
           </div>
 
-          {/* Milestones Markers */}
-          {(() => {
-            const growthLabels = [11, 50, 100];
-            return data.revenue.targets.map((position, idx) => (
+          <div className="relative pt-5 pb-1 px-2">
+            {/* Progress Track */}
+            <div className="h-3 bg-slate-100 rounded-full w-full overflow-hidden relative">
               <div 
-                key={idx}
-                className="absolute top-0 flex flex-col items-center transform -translate-x-1/2"
-                style={{ left: `${position}%` }}
+                className="h-full transition-all duration-1000 ease-out relative"
+                style={{ 
+                  width: `${getRevenueWidth(data.revenue.current)}%`,
+                  background: `linear-gradient(to right, ${COLORS.primaryLighter}, ${COLORS.primary})`
+                }}
               >
-                <div className="mb-0.5 text-[10px] font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200" style={{ color: COLORS.black }}>
-                   {growthLabels[idx]}%
-                </div>
+                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/30 animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Milestones Markers */}
+            {(() => {
+              const growthLabels = [11, 50, 100];
+              return data.revenue.targets.map((position, idx) => (
                 <div 
-                  className="w-0.5 h-5"
-                  style={{ backgroundColor: data.revenue.current >= position ? COLORS.primary : '#cbd5e1' }}
-                ></div>
-              </div>
-            ));
-          })()}
+                  key={idx}
+                  className="absolute top-0 flex flex-col items-center transform -translate-x-1/2"
+                  style={{ left: `${position}%` }}
+                >
+                  <div className="mb-0.5 text-[10px] font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200" style={{ color: COLORS.black }}>
+                     {growthLabels[idx]}%
+                  </div>
+                  <div 
+                    className="w-0.5 h-5"
+                    style={{ backgroundColor: data.revenue.current >= position ? COLORS.primary : '#cbd5e1' }}
+                  ></div>
+                </div>
+              ));
+            })()}
+          </div>
         </div>
-      </div>
 
-      {/* Main Grid: Map, Time, Lists */}
-      <div className="flex-1 grid grid-cols-12 gap-3 min-h-0">
-        
-        {/* Left Column: Map */}
-        <div className="col-span-5 bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden">
-          <BrazilMap points={data.mapPoints} heatPoints={data.heatPoints} />
-        </div>
-
-        {/* Middle Column: Time Metrics */}
-        <div className="col-span-3 flex flex-col gap-3">
-           
+        {/* Indicadores de Tempo - 50% */}
+        <div className="grid grid-cols-3 gap-3">
            {/* Card 1: Total Time */}
-           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex-1 flex flex-col justify-center items-center text-center">
+           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-center items-center text-center">
               <div className="p-2 rounded-full mb-1" style={{ backgroundColor: '#eef2ff' }}>
-                  <Clock className="w-6 h-6" style={{ color: COLORS.primary }} />
+                  <Clock className="w-5 h-5" style={{ color: COLORS.primary }} />
               </div>
-              <h3 className="font-medium text-xs uppercase tracking-wide" style={{ color: COLORS.black }}>Tempo Total</h3>
+              <h3 className="font-medium text-[10px] uppercase tracking-wide" style={{ color: COLORS.black }}>Tempo Total</h3>
               <div className="mt-1">
-                 <span className="text-4xl font-bold" style={{ color: COLORS.black }}>{data.timeMetrics.total}</span>
-                 <span className="text-sm font-medium text-slate-400 ml-1">dias</span>
+                 <span className="text-3xl font-bold" style={{ color: COLORS.black }}>{data.timeMetrics.total}</span>
+                 <span className="text-xs font-medium text-slate-400 ml-1">dias</span>
               </div>
-              <p className="text-[10px] text-slate-400 mt-0.5">Média Global do Processo</p>
+              <p className="text-[9px] text-slate-400 mt-0.5">Média Global</p>
            </div>
 
            {/* Card 2: Operações */}
-           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex-1 flex flex-col justify-center">
+           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-center">
               <div className="flex justify-between items-center mb-1">
-                  <div className="flex items-center gap-1.5">
-                      <Settings className="w-4 h-4 text-slate-400" />
-                      <h3 className="font-bold text-sm" style={{ color: COLORS.black }}>Operações</h3>
+                  <div className="flex items-center gap-1">
+                      <Settings className="w-3.5 h-3.5 text-slate-400" />
+                      <h3 className="font-bold text-xs" style={{ color: COLORS.black }}>Operações</h3>
                   </div>
                   {data.timeMetrics.operations > 3 ? 
-                      <span className="bg-rose-100 text-rose-600 text-[9px] uppercase px-1.5 py-0.5 rounded-full font-bold">Atraso</span> : 
-                      <span className="text-[9px] uppercase px-1.5 py-0.5 rounded-full font-bold" style={{ backgroundColor: '#eef2ff', color: COLORS.primary }}>OK</span>
+                      <span className="bg-rose-100 text-rose-600 text-[8px] uppercase px-1 py-0.5 rounded-full font-bold">Atraso</span> : 
+                      <span className="text-[8px] uppercase px-1 py-0.5 rounded-full font-bold" style={{ backgroundColor: '#eef2ff', color: COLORS.primary }}>OK</span>
                   }
               </div>
               
               <div className="flex items-end justify-between mb-1">
                  <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold" style={{ color: COLORS.black }}>{data.timeMetrics.operations}</span>
-                    <span className="text-xs text-slate-500">dias</span>
+                    <span className="text-[10px] text-slate-500">dias</span>
                  </div>
-                 <span className="text-[10px] font-semibold text-slate-400">Meta: 72h (3d)</span>
+                 <span className="text-[9px] font-semibold text-slate-400">Meta: 72h</span>
               </div>
               
               <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
@@ -205,24 +198,24 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
            </div>
 
            {/* Card 3: Engenharia */}
-           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex-1 flex flex-col justify-center">
+           <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-center">
               <div className="flex justify-between items-center mb-1">
-                  <div className="flex items-center gap-1.5">
-                      <HardHat className="w-4 h-4 text-slate-400" />
-                      <h3 className="font-bold text-sm" style={{ color: COLORS.black }}>Engenharia</h3>
+                  <div className="flex items-center gap-1">
+                      <HardHat className="w-3.5 h-3.5 text-slate-400" />
+                      <h3 className="font-bold text-xs" style={{ color: COLORS.black }}>Engenharia</h3>
                   </div>
                    {data.timeMetrics.engineering > 2 ? 
-                      <span className="bg-rose-100 text-rose-600 text-[9px] uppercase px-1.5 py-0.5 rounded-full font-bold">Atraso</span> : 
-                      <span className="text-[9px] uppercase px-1.5 py-0.5 rounded-full font-bold" style={{ backgroundColor: '#eef2ff', color: COLORS.primary }}>OK</span>
+                      <span className="bg-rose-100 text-rose-600 text-[8px] uppercase px-1 py-0.5 rounded-full font-bold">Atraso</span> : 
+                      <span className="text-[8px] uppercase px-1 py-0.5 rounded-full font-bold" style={{ backgroundColor: '#eef2ff', color: COLORS.primary }}>OK</span>
                   }
               </div>
               
               <div className="flex items-end justify-between mb-1">
                  <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold" style={{ color: COLORS.black }}>{data.timeMetrics.engineering}</span>
-                    <span className="text-xs text-slate-500">dias</span>
+                    <span className="text-[10px] text-slate-500">dias</span>
                  </div>
-                 <span className="text-[10px] font-semibold text-slate-400">Meta: 48h (2d)</span>
+                 <span className="text-[9px] font-semibold text-slate-400">Meta: 48h</span>
               </div>
               
               <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
@@ -235,73 +228,76 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
                    ></div>
               </div>
            </div>
+        </div>
+      </div>
 
+      {/* Main Grid: Map | Em Atraso | Com Pendência */}
+      <div className="flex-1 grid grid-cols-3 gap-3 min-h-0">
+        
+        {/* Column 1: Map */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden">
+          <BrazilMap points={data.mapPoints} heatPoints={data.heatPoints} />
         </div>
 
-        {/* Right Column: Alerts Lists - altura fixa, scroll interno */}
-        <div className="col-span-4 flex flex-col gap-3 min-h-0">
-           
-           {/* Overdue - altura fixa (metade da coluna), scroll na lista */}
-           <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden min-h-0">
-              <div className="p-3 bg-rose-50 border-b border-rose-100 flex justify-between items-center shrink-0">
-                <h3 className="font-bold text-rose-800 flex items-center gap-1.5 text-sm">
-                   <AlertTriangle className="w-4 h-4" />
-                   Em Atraso
-                   <span className="text-rose-500 font-normal text-xs">(Mais de 48h)</span>
-                </h3>
-                 <span className="bg-white text-rose-600 text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
-                    {data.tickets.delayed.length}
-                 </span>
-              </div>
-              <div className="flex-1 min-h-0 overflow-y-auto p-2 scrollbar-thin">
-                 {data.tickets.delayed.length === 0 ? (
-                    <p className="text-slate-400 text-xs text-center py-3">Nenhum caso de vistoria em aberto</p>
-                 ) : (
-                    data.tickets.delayed.map(ticket => (
-                      <div key={ticket.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                         <div>
-                            <p className="font-semibold text-xs" style={{ color: COLORS.black }}>{ticket.client}</p>
-                            <p className="text-[10px] text-slate-400">{ticket.id}</p>
-                         </div>
-                         <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">
-                            {ticket.info}
-                         </span>
-                      </div>
-                    ))
-                 )}
-              </div>
-           </div>
+        {/* Column 2: Em Atraso */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0">
+          <div className="p-3 bg-rose-50 border-b border-rose-100 flex justify-between items-center shrink-0">
+            <h3 className="font-bold text-rose-800 flex items-center gap-1.5 text-sm">
+               <AlertTriangle className="w-4 h-4" />
+               Em Atraso
+               <span className="text-rose-500 font-normal text-xs">(Mais de 48h)</span>
+            </h3>
+             <span className="bg-white text-rose-600 text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
+                {data.tickets.delayed.length}
+             </span>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto p-2 scrollbar-thin">
+             {data.tickets.delayed.length === 0 ? (
+                <p className="text-slate-400 text-xs text-center py-3">Nenhum caso de vistoria em aberto</p>
+             ) : (
+                data.tickets.delayed.map(ticket => (
+                  <div key={ticket.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                     <div>
+                        <p className="font-semibold text-xs" style={{ color: COLORS.black }}>{ticket.client}</p>
+                        <p className="text-[10px] text-slate-400">{ticket.id}</p>
+                     </div>
+                     <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">
+                        {ticket.info}
+                     </span>
+                  </div>
+                ))
+             )}
+          </div>
+        </div>
 
-           {/* Pending */}
-           <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex-1 flex flex-col overflow-hidden min-h-0">
-              <div className="p-3 border-b flex justify-between items-center shrink-0" style={{ backgroundColor: '#fef3c7', borderColor: '#fde68a' }}>
-                 <h3 className="font-bold flex items-center gap-1.5 text-sm" style={{ color: '#92400e' }}>
-                    <AlertCircle className="w-4 h-4" />
-                    Com Pendência
-                 </h3>
-                 <span className="bg-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm" style={{ color: '#d97706' }}>
-                    {data.tickets.pending.length}
-                 </span>
-              </div>
-              <div className="flex-1 min-h-0 overflow-y-auto p-2 scrollbar-thin">
-                 {data.tickets.pending.length === 0 ? (
-                    <p className="text-slate-400 text-xs text-center py-3">Nenhum deal pendente</p>
-                 ) : (
-                    data.tickets.pending.slice(0, 5).map(ticket => (
-                      <div key={ticket.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                         <div>
-                            <p className="font-semibold text-xs" style={{ color: COLORS.black }}>{ticket.client}</p>
-                            <p className="text-[10px] text-slate-400">{ticket.id}</p>
-                         </div>
-                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border max-w-[100px] truncate" style={{ color: '#92400e', backgroundColor: '#fef3c7', borderColor: '#fde68a' }} title={ticket.info}>
-                            {ticket.info}
-                         </span>
-                      </div>
-                    ))
-                 )}
-              </div>
-           </div>
-
+        {/* Column 3: Com Pendência */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0">
+          <div className="p-3 border-b flex justify-between items-center shrink-0" style={{ backgroundColor: '#fef3c7', borderColor: '#fde68a' }}>
+             <h3 className="font-bold flex items-center gap-1.5 text-sm" style={{ color: '#92400e' }}>
+                <AlertCircle className="w-4 h-4" />
+                Com Pendência
+             </h3>
+             <span className="bg-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm" style={{ color: '#d97706' }}>
+                {data.tickets.pending.length}
+             </span>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto p-2 scrollbar-thin">
+             {data.tickets.pending.length === 0 ? (
+                <p className="text-slate-400 text-xs text-center py-3">Nenhum deal pendente</p>
+             ) : (
+                data.tickets.pending.map(ticket => (
+                  <div key={ticket.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                     <div>
+                        <p className="font-semibold text-xs" style={{ color: COLORS.black }}>{ticket.client}</p>
+                        <p className="text-[10px] text-slate-400">{ticket.id}</p>
+                     </div>
+                     <span className="text-[10px] font-medium px-1.5 py-0.5 rounded border max-w-[100px] truncate" style={{ color: '#92400e', backgroundColor: '#fef3c7', borderColor: '#fde68a' }} title={ticket.info}>
+                        {ticket.info}
+                     </span>
+                  </div>
+                ))
+             )}
+          </div>
         </div>
       </div>
     </div>

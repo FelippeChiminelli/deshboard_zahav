@@ -37,8 +37,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, title, filter, setFilter
           <Menu className="w-6 h-6 text-slate-600" />
         </button>
         <img 
-          src="/logo/Logo Primária Azul.svg" 
-          alt="Logo" 
+          src="/logo/WhatsApp Image 2026-02-02 at 20.25.00.jpeg" 
+          alt="Logo ZAHAV" 
           className="h-8 mr-4"
         />
         <h2 className="text-xl font-semibold truncate" style={{ color: '#000000' }}>{title}</h2>
