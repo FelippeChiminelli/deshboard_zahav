@@ -96,7 +96,7 @@ export const fetchDeals = async (filter?: DashboardFilter): Promise<DealPloomes[
  * - Tempo de operações = (fim_operacoes - start_date) + (finish_date - fim_engenharia)
  * - Tempo de engenharia = fim_engenharia - fim_operacoes
  */
-const calculateTimeMetrics = (deals: DealPloomes[]) => {
+export const calculateTimeMetrics = (deals: DealPloomes[]) => {
   // Deals com tempo total (start_date e finish_date)
   const dealsWithTotal = deals.filter(d => d.start_date && d.finish_date);
   

@@ -2,6 +2,7 @@ import React from 'react';
 import { Sector, DashboardFilter } from '../types';
 import { Construction, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import VistoriaDashboard from './VistoriaDashboard';
 
 interface SectorViewProps {
   sector: Sector;
@@ -40,63 +41,71 @@ const getSectorDescription = (s: Sector) => {
 };
 
 const SectorView: React.FC<SectorViewProps> = ({ sector, filter }) => {
+  const isVistorias = sector === Sector.VISTORIAS;
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 border-b pb-4 border-slate-200">
         <div>
           <h2 className="text-2xl font-bold text-slate-800">{getSectorTitle(sector)}</h2>
           <p className="text-slate-500 text-sm mt-1">
-            Período selecionado: {filter.month + 1}/{filter.year}
+            Visualizando dados de {filter.month + 1}/{filter.year}
           </p>
         </div>
         <Link 
           to="/" 
-          className="mt-4 md:mt-0 flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+          className="mt-4 md:mt-0 flex items-center gap-2 font-medium text-sm"
+          style={{ color: '#0810A6' }}
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar ao Dashboard Geral
         </Link>
       </div>
 
-      {/* Em Desenvolvimento */}
-      <div className="flex flex-col items-center justify-center py-16 px-6">
-        <div className="bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl p-12 max-w-2xl w-full text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-100 rounded-full mb-6">
-            <Construction className="w-10 h-10 text-amber-600" />
-          </div>
-          
-          <h3 className="text-2xl font-bold text-slate-800 mb-3">
-            Setor em Desenvolvimento
-          </h3>
-          
-          <p className="text-slate-600 mb-6 max-w-md mx-auto">
-            {getSectorDescription(sector)}
-          </p>
+      {isVistorias ? (
+        <VistoriaDashboard filter={filter} />
+      ) : (
+        <>
+          <div className="flex flex-col items-center justify-center py-16 px-6">
+            <div className="bg-amber-50 border-2 border-dashed border-amber-200 rounded-2xl p-12 max-w-2xl w-full text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-100 rounded-full mb-6">
+                <Construction className="w-10 h-10 text-amber-600" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-slate-800 mb-3">
+                Setor em Desenvolvimento
+              </h3>
+              
+              <p className="text-slate-600 mb-6 max-w-md mx-auto">
+                {getSectorDescription(sector)}
+              </p>
 
-          <div className="bg-white rounded-lg p-4 border border-amber-100 mb-6">
-            <p className="text-sm text-slate-500">
-              Os dados específicos deste setor ainda não estão integrados ao Supabase. 
-              Atualmente, apenas o <strong>Dashboard Geral</strong> está conectado aos dados reais.
-            </p>
+              <div className="bg-white rounded-lg p-4 border border-amber-100 mb-6">
+                <p className="text-sm text-slate-500">
+                  Os dados específicos deste setor ainda não estão integrados ao Supabase. 
+                  Atualmente, apenas o <strong>Dashboard Geral</strong> está conectado aos dados reais.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link 
+                  to="/"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white rounded-lg transition-colors font-medium"
+                  style={{ backgroundColor: '#0810A6' }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Ver Dashboard Geral
+                </Link>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link 
-              to="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Ver Dashboard Geral
-            </Link>
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+            <strong>Próximos passos:</strong> Para habilitar este setor, será necessário criar as tabelas 
+            correspondentes no Supabase e configurar a integração de dados específica para {getSectorTitle(sector)}.
           </div>
-        </div>
-      </div>
-
-      {/* Info sobre próximos passos */}
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
-        <strong>Próximos passos:</strong> Para habilitar este setor, será necessário criar as tabelas 
-        correspondentes no Supabase e configurar a integração de dados específica para {getSectorTitle(sector)}.
-      </div>
+        </>
+      )}
     </div>
   );
 };

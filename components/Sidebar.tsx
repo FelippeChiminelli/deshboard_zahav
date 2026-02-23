@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           className="flex items-center justify-center h-16 shadow-md"
           style={{ backgroundColor: '#0c1a24' }}
         >
-          <h1 className="text-xl font-bold tracking-wider" style={{ color: '#0810A6' }}>INDICADORES</h1>
+          <h1 className="text-xl font-bold tracking-wider text-white">INDICADORES</h1>
         </div>
 
         <nav className="mt-6 px-4 space-y-2">

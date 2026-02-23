@@ -83,6 +83,70 @@ export interface Database {
           data_vistoria?: string | null;
         };
       };
+      deals_orcadoxrealizado: {
+        Row: {
+          id: number;
+          created_at: string;
+          id_deal: number | null;
+          valor_orcado: number | null;
+          valor_realizado: number | null;
+          nome_vistoriador: string | null;
+          title: string | null;
+          tipo_bem: string | null;
+          id_vistoriador: string | null;
+          tipo_vistoriador: string | null;
+          start_date_ploomes: string | null;
+        };
+        Insert: {
+          id?: number;
+          created_at?: string;
+          id_deal?: number | null;
+          valor_orcado?: number | null;
+          valor_realizado?: number | null;
+          nome_vistoriador?: string | null;
+          title?: string | null;
+          tipo_bem?: string | null;
+          id_vistoriador?: string | null;
+          tipo_vistoriador?: string | null;
+          start_date_ploomes?: string | null;
+        };
+        Update: {
+          id?: number;
+          created_at?: string;
+          id_deal?: number | null;
+          valor_orcado?: number | null;
+          valor_realizado?: number | null;
+          nome_vistoriador?: string | null;
+          title?: string | null;
+          tipo_bem?: string | null;
+          id_vistoriador?: string | null;
+          tipo_vistoriador?: string | null;
+          start_date_ploomes?: string | null;
+        };
+      };
+      vistoriadores: {
+        Row: {
+          id: number;
+          created_at: string;
+          nome: string | null;
+          id_ploomes: string | null;
+          data_criacao: string | null;
+        };
+        Insert: {
+          id?: number;
+          created_at?: string;
+          nome?: string | null;
+          id_ploomes?: string | null;
+          data_criacao?: string | null;
+        };
+        Update: {
+          id?: number;
+          created_at?: string;
+          nome?: string | null;
+          id_ploomes?: string | null;
+          data_criacao?: string | null;
+        };
+      };
     };
   };
 }
@@ -91,3 +155,5 @@ export interface Database {
 export type DealPloomes = Database['public']['Tables']['deals_ploomes']['Row'];
 export type PendenciaEngenharia = Database['public']['Tables']['pendencias_engenharia']['Row'];
 export type CasoVistoria = Database['public']['Tables']['casos_vistoria']['Row'];
+export type DealOrcadoRealizado = Database['public']['Tables']['deals_orcadoxrealizado']['Row'];
+export type Vistoriador = Database['public']['Tables']['vistoriadores']['Row'];
