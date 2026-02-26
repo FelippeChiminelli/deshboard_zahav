@@ -21,6 +21,56 @@ const formatCurrency = (value: number): string => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
+interface ChartTooltipPayload {
+  payload?: {
+    orcado?: number;
+    realizado?: number;
+  };
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: ChartTooltipPayload[];
+  label?: string | number;
+}
+
+const VistoriaChartTooltip: React.FC<ChartTooltipProps> = ({ active, payload, label }) => {
+  if (!active || !payload || payload.length === 0) return null;
+
+  const ponto = payload[0]?.payload;
+  const orcado = ponto?.orcado ?? 0;
+  const realizado = ponto?.realizado ?? 0;
+  const diferenca = orcado - realizado;
+  const diferencaColor = diferenca < 0 ? '#dc2626' : '#475569';
+
+  return (
+    <div
+      style={{
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+        fontSize: '12px',
+        padding: '8px 10px',
+      }}
+    >
+      <div style={{ color: '#64748b', marginBottom: '6px' }}>Dia {label}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+        <span style={{ color: '#334155' }}>Orçado</span>
+        <strong style={{ color: COLORS.primary }}>{formatCurrency(orcado)}</strong>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+        <span style={{ color: '#334155' }}>Realizado</span>
+        <strong style={{ color: '#3b82f6' }}>{formatCurrency(realizado)}</strong>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+        <span style={{ color: '#334155' }}>Diferença</span>
+        <strong style={{ color: diferencaColor }}>{formatCurrency(diferenca)}</strong>
+      </div>
+    </div>
+  );
+};
+
 const KPICard: React.FC<{
   title: string;
   value: string;
@@ -134,17 +184,7 @@ const VistoriaDashboard: React.FC<VistoriaDashboardProps> = ({ filter }) => {
                   tickFormatter={(v) => v.toLocaleString('pt-BR')}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
-                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                    fontSize: '12px',
-                  }}
-                  formatter={(value: number, name: string) => [
-                    formatCurrency(value),
-                    name === 'orcado' ? 'Orçado' : 'Realizado'
-                  ]}
+                  content={<VistoriaChartTooltip />}
                 />
                 <Legend 
                   wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
