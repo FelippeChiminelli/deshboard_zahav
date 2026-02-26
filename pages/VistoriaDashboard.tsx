@@ -207,7 +207,7 @@ const VistoriaDashboard: React.FC<VistoriaDashboardProps> = ({ filter }) => {
             </div>
 
             <p className="text-[10px] text-slate-400 text-center mt-2">
-              Meta mensal de valor agregado pelo setor.
+              Meta mensal de bonus por performance das metas.
             </p>
           </div>
         </div>

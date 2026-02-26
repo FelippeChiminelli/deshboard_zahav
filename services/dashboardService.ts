@@ -371,9 +371,21 @@ const fetchCasosVistoria = async (filter?: DashboardFilter): Promise<CasoVistori
  * Filtra casos em atraso: data_vistoria há mais de 48 HORAS ÚTEIS
  * Considera: Segunda a Sexta, 8h às 18h (10h úteis por dia)
  */
-const getDelayedFromCasosVistoria = (casos: CasoVistoria[]): TicketAlert[] => {
+const getDelayedFromCasosVistoria = (
+  casos: CasoVistoria[],
+  pendencias: PendenciaEngenharia[] = []
+): TicketAlert[] => {
+  const pendingDealIds = new Set(
+    pendencias
+      .map(pendencia => pendencia.id_deal)
+      .filter((idDeal): idDeal is number => idDeal != null)
+  );
+
   return casos
     .filter(c => {
+      if (c.id_deal != null && pendingDealIds.has(c.id_deal)) {
+        return false;
+      }
       const horasUteis = getHorasUteisSince(c.data_vistoria);
       return horasUteis > HORAS_PRAZO_ATRASO_VISTORIA;
     })
@@ -651,7 +663,7 @@ export const fetchGeneralDashboardData = async (filter?: DashboardFilter): Promi
     heatPoints: generateHeatPoints(deals), // Pontos individuais para mapa de calor detalhado
     timeMetrics: calculateTimeMetrics(deals),
     tickets: {
-      delayed: getDelayedFromCasosVistoria(casosVistoria), // Casos com data_vistoria > 48h
+      delayed: getDelayedFromCasosVistoria(casosVistoria, pendencias), // Casos com data_vistoria > 48h e sem pendência
       pending: getPendenciasAsTickets(pendencias),
     },
     revenue: calculateRevenueGrowth(totalRevenue),

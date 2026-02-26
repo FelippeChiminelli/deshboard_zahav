@@ -82,6 +82,8 @@ const TIPOS_TECNICOS = [
   'engenheira civil',
   'arquiteta',
   'tec. agrimensor',
+  'engenheiro agronomo',
+  'tecnico em adificacoes',
 ];
 
 const isTecnico = (tipo: string | null): boolean => {
@@ -147,17 +149,36 @@ const calcularChartData = (deals: DealOrcadoRealizado[], filter: DashboardFilter
   return points;
 };
 
-const calcularValorGanho = (deals: DealOrcadoRealizado[]): ValorGanho => {
-  const dealsComValor = deals.filter(d => d.valor_realizado != null);
-  const totalRealizado = dealsComValor.reduce((sum, d) => sum + (d.valor_realizado ?? 0), 0);
-  const totalOrcado = dealsComValor.reduce((sum, d) => sum + (d.valor_orcado ?? 0), 0);
+const VALOR_GANHO_META = 1000;
+const BONUS_ORCADO_VS_REALIZADO = 500;
+const BONUS_VISTORIADORES_TECNICOS = 100;
+const BONUS_NOVOS_VISTORIADORES = 100;
+const BONUS_TEMPO_MEDIO_OPS = 300;
 
-  const meta = totalOrcado > 0 ? totalOrcado : 1000;
-  const percentual = meta > 0 ? Math.round((totalRealizado / meta) * 1000) / 10 : 0;
+const calcularValorGanho = (kpis: VistoriaKPIs): ValorGanho => {
+  let totalBonus = 0;
+
+  if (kpis.orcadoVsRealizadoPercent <= 100) {
+    totalBonus += BONUS_ORCADO_VS_REALIZADO;
+  }
+
+  if (kpis.totalVistorias >= 95) {
+    totalBonus += BONUS_VISTORIADORES_TECNICOS;
+  }
+
+  if (kpis.novosVistoriadores >= 5) {
+    totalBonus += BONUS_NOVOS_VISTORIADORES;
+  }
+
+  if (kpis.tempoMedioOps > 0 && kpis.tempoMedioOps <= 3) {
+    totalBonus += BONUS_TEMPO_MEDIO_OPS;
+  }
+
+  const percentual = Math.round((totalBonus / VALOR_GANHO_META) * 1000) / 10;
 
   return {
-    atual: Math.round(totalRealizado * 100) / 100,
-    meta: Math.round(meta * 100) / 100,
+    atual: totalBonus,
+    meta: VALOR_GANHO_META,
     percentual,
   };
 };
@@ -175,7 +196,7 @@ export const fetchVistoriaData = async (filter: DashboardFilter): Promise<Vistor
   kpis.novosVistoriadores = novosVistoriadores;
 
   const chartData = calcularChartData(dealsOrcado, filter);
-  const valorGanho = calcularValorGanho(dealsOrcado);
+  const valorGanho = calcularValorGanho(kpis);
 
   return {
     kpis,
