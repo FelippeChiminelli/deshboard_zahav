@@ -41,7 +41,7 @@ const VistoriaChartTooltip: React.FC<ChartTooltipProps> = ({ active, payload, la
   const orcado = ponto?.orcado ?? 0;
   const realizado = ponto?.realizado ?? 0;
   const diferenca = orcado - realizado;
-  const diferencaColor = diferenca < 0 ? '#dc2626' : '#475569';
+  const diferencaColor = diferenca < 0 ? '#dc2626' : diferenca > 0 ? '#16a34a' : '#475569';
 
   return (
     <div
