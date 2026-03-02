@@ -121,12 +121,15 @@ const calcularKPIs = (deals: DealOrcadoRealizado[]): VistoriaKPIs => {
 
 const calcularChartData = (deals: DealOrcadoRealizado[], filter: DashboardFilter): DailyChartPoint[] => {
   const diasNoMes = new Date(filter.year, filter.month + 1, 0).getDate();
+  const hoje = new Date();
+  const isMesAtual = filter.year === hoje.getFullYear() && filter.month === hoje.getMonth();
+  const ultimoDiaExibido = isMesAtual ? Math.min(hoje.getDate(), diasNoMes) : diasNoMes;
   const points: DailyChartPoint[] = [];
 
   let acumOrcado = 0;
   let acumRealizado = 0;
 
-  for (let dia = 1; dia <= diasNoMes; dia++) {
+  for (let dia = 1; dia <= ultimoDiaExibido; dia++) {
     const dealsDoDia = deals.filter(d => {
       if (!d.start_date_ploomes) return false;
       const date = new Date(d.start_date_ploomes);
