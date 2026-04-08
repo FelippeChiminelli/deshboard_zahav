@@ -595,32 +595,56 @@ const generateHeatPoints = (deals: DealPloomes[]): HeatPoint[] => {
   return heatPoints;
 };
 
-// Constantes de meta de faturamento anual
-const MARCO_6M = 6_000_000;  // 11% da meta
-const MARCO_9M = 9_000_000;  // 50% da meta
+// Constantes de meta de faturamento anual (meta total = MARCO_12M = 100%)
+const MARCO_6M = 6_000_000; // 50% da meta anual (R$ 12M)
+const MARCO_9M = 9_000_000; // 75% da meta anual
 const MARCO_12M = 12_000_000; // 100% da meta
 
+/** PostgREST/Supabase retorna no máx. 1000 linhas por requisição se não paginar. */
+const REVENUE_PAGE_SIZE = 1000;
+
+type RevenueRow = { valor_faturamento: number | null };
+
 /**
- * Busca o faturamento total do ano
+ * Busca o faturamento total do ano (soma de todas as linhas, com paginação).
  */
 const fetchYearlyRevenue = async (year: number): Promise<number> => {
-  const { data, error } = await supabase
-    .from('deals_ploomes')
-    .select('valor_faturamento')
-    .gte('finish_date', `${year}-01-01`)
-    .lt('finish_date', `${year + 1}-01-01`)
-    .not('valor_faturamento', 'is', null) as { data: { valor_faturamento: number | null }[] | null; error: unknown };
+  const start = `${year}-01-01`;
+  const end = `${year + 1}-01-01`;
+  let total = 0;
+  let offset = 0;
 
-  if (error) {
-    console.error('Erro ao buscar faturamento:', error);
-    return 0;
+  for (;;) {
+    const { data, error } = (await supabase
+      .from('deals_ploomes')
+      .select('valor_faturamento')
+      .gte('finish_date', start)
+      .lt('finish_date', end)
+      .not('valor_faturamento', 'is', null)
+      .order('id', { ascending: true })
+      .range(offset, offset + REVENUE_PAGE_SIZE - 1)) as {
+      data: RevenueRow[] | null;
+      error: unknown;
+    };
+
+    if (error) {
+      console.error('Erro ao buscar faturamento:', error);
+      return 0;
+    }
+
+    if (!data?.length) {
+      break;
+    }
+
+    total += data.reduce((sum, d) => sum + (d.valor_faturamento ?? 0), 0);
+
+    if (data.length < REVENUE_PAGE_SIZE) {
+      break;
+    }
+    offset += REVENUE_PAGE_SIZE;
   }
 
-  if (!data || data.length === 0) {
-    return 0;
-  }
-
-  return data.reduce((sum, d) => sum + (d.valor_faturamento ?? 0), 0);
+  return total;
 };
 
 /**

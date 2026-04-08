@@ -98,7 +98,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
     <div className="h-full flex flex-col gap-3">
       {/* Top Section: Meta + Indicadores de Tempo lado a lado */}
       <div className="grid grid-cols-2 gap-3 shrink-0">
-        {/* Meta de Crescimento - 50% */}
+        {/* Meta de faturamento anual (vs R$ 12M) */}
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
           <div className="flex justify-between items-center mb-3">
             <div>
@@ -108,7 +108,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
               </h2>
               <p className="text-xs text-slate-500">Progresso em relação à meta de {filter.year}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right shrink-0 pl-2">
                <span className="text-2xl font-bold" style={{ color: COLORS.primary }}>{data.revenue.current}%</span>
                <span className="text-xs text-slate-400 block">da meta anual</span>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import Brazil from '@react-map/brazil';
 import { MapPoint, HeatPoint } from '../types';
 
@@ -139,15 +139,26 @@ const geoToSvgPosition = (lat: number, lng: number): { x: number; y: number } | 
 
 const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
   const [selectedState, setSelectedState] = useState<string | null>(null);
-  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   const getStateVolume = (stateCode: string): number => {
     const point = points.find(p => p.state === stateCode);
     return point?.volume || 0;
   };
 
-  const handleSelect = (state: string) => {
-    setSelectedState(state);
+  /** A lib @react-map/brazil usa nome completo no onSelect; dados usam sigla UF. */
+  const handleSelect = (stateFromMap: string | null) => {
+    if (stateFromMap == null) {
+      setSelectedState(null);
+      return;
+    }
+    const uf = Object.entries(STATE_NAMES).find(([, name]) => name === stateFromMap)?.[0];
+    if (uf) {
+      setSelectedState(uf);
+      return;
+    }
+    if (STATE_NAMES[stateFromMap]) {
+      setSelectedState(stateFromMap);
+    }
   };
 
   const totalProjects = points.reduce((sum, p) => sum + p.volume, 0);
@@ -167,53 +178,13 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
     return data;
   }, [points, maxVolume]);
 
-  // Aplica cores do mapa de calor diretamente nos estados do SVG
-  useEffect(() => {
-    const applyHeatMapColors = () => {
-      if (!mapContainerRef.current) return;
-      
-      const svg = mapContainerRef.current.querySelector('svg');
-      if (!svg) return;
-
-      const paths = svg.querySelectorAll('path');
-      
-      paths.forEach((path) => {
-        const dataTip = path.getAttribute('data-tip');
-        const id = path.getAttribute('id');
-        
-        let stateCode: string | undefined;
-        
-        // Tenta pelo data-tip (nome completo do estado)
-        if (dataTip) {
-          stateCode = Object.entries(STATE_NAMES).find(
-            ([, stateName]) => stateName.toLowerCase() === dataTip.toLowerCase()
-          )?.[0];
-        }
-        
-        // Tenta pelo id (formato: "Acre-_r_0_", "Minas Gerais-_r_1_", etc.)
-        if (!stateCode && id) {
-          const stateNameFromId = id.replace(/-_r_\d+_$/, '');
-          if (stateNameFromId) {
-            stateCode = Object.entries(STATE_NAMES).find(
-              ([, stateName]) => stateName.toLowerCase() === stateNameFromId.toLowerCase()
-            )?.[0];
-          }
-        }
-        
-        // Aplica a cor se encontrou o estado
-        if (stateCode && heatMapData[stateCode]) {
-          path.style.cssText = `fill: ${heatMapData[stateCode]} !important;`;
-          path.setAttribute('fill', heatMapData[stateCode]);
-        }
-      });
-    };
-
-    // Aplica após delays para garantir renderização
-    const timeouts = [50, 150, 300, 500].map(delay => 
-      setTimeout(applyHeatMapColors, delay)
-    );
-    
-    return () => timeouts.forEach(clearTimeout);
+  /** Chaves = nome completo do estado, como em @react-map/brazil (restaura fill após hover). */
+  const cityColors = useMemo(() => {
+    const record: Record<string, string> = {};
+    Object.entries(STATE_NAMES).forEach(([uf, fullName]) => {
+      record[fullName] = heatMapData[uf];
+    });
+    return record;
   }, [heatMapData]);
 
   const getBarColor = (index: number): string => {
@@ -255,7 +226,7 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
 
       {/* Mapa com indicadores */}
       <div className="flex-1 flex items-center justify-center p-1 min-h-0 relative">
-        <div ref={mapContainerRef} className="relative brazil-map">
+        <div className="relative brazil-map">
           <Brazil
             type="select-single"
             size={400}
@@ -264,6 +235,8 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
             strokeWidth={0.5}
             hoverColor="#a5b4fc"
             selectColor={COLORS.primary}
+            cityColors={cityColors}
+            disableHover
             hints={true}
             hintTextColor={COLORS.black}
             hintBackgroundColor={COLORS.white}
