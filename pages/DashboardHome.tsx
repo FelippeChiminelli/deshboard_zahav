@@ -232,15 +232,15 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
       </div>
 
       {/* Main Grid: Map | Em Atraso | Com Pendência */}
-      <div className="flex-1 grid grid-cols-3 gap-3 min-h-0">
+      <div className="flex-1 grid grid-cols-3 gap-3 min-h-0 min-w-0">
         
-        {/* Column 1: Map */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden">
+        {/* Column 1: Map — min-w-0 evita que 400px fixos estourem o grid; z-0 para não cobrir colunas ao lado */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0 min-w-0 relative z-0">
           <BrazilMap points={data.mapPoints} heatPoints={data.heatPoints} />
         </div>
 
         {/* Column 2: Em Atraso */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0 min-w-0 relative z-10">
           <div className="p-3 bg-rose-50 border-b border-rose-100 flex justify-between items-center shrink-0">
             <h3 className="font-bold text-rose-800 flex items-center gap-1.5 text-sm">
                <AlertTriangle className="w-4 h-4" />
@@ -271,7 +271,7 @@ const DashboardHome: React.FC<DashboardHomeProps> = ({ filter }) => {
         </div>
 
         {/* Column 3: Com Pendência */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col overflow-hidden min-h-0 min-w-0 relative z-10">
           <div className="p-3 border-b flex justify-between items-center shrink-0" style={{ backgroundColor: '#fef3c7', borderColor: '#fde68a' }}>
              <h3 className="font-bold flex items-center gap-1.5 text-sm" style={{ color: '#92400e' }}>
                 <AlertCircle className="w-4 h-4" />

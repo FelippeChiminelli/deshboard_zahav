@@ -11,6 +11,21 @@
         font-family: 'Inter', sans-serif;
         background-color: #f8fafc;
       }
+      /* Largura do mapa vem da prop size (ResizeObserver em BrazilMap.tsx) */
+      .brazil-map {
+        max-width: 100%;
+        isolation: isolate;
+      }
+      .brazil-map .map,
+      .brazil-map svg {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+      }
+      /* Tooltip da lib (2º filho, sem .map) usa position:fixed e z-index 1000 */
+      .brazil-map > div:not(.map) {
+        z-index: 5 !important;
+      }
       .brazil-map svg path:hover {
         filter: brightness(1.08) saturate(1.05);
       }

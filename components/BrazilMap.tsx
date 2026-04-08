@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useLayoutEffect } from 'react';
 import Brazil from '@react-map/brazil';
 import { MapPoint, HeatPoint } from '../types';
 
@@ -94,10 +94,25 @@ const STATE_SVG_COORDS: Record<string, { x: number; y: number }> = {
   'RS': { x: 330, y: 565 },
 };
 
+/** Mesma proporção do SVG do @react-map/brazil (overlay / size da lib). */
+const MAP_VB_W = 612;
+const MAP_VB_H = 639;
+
+/**
+ * Largura em px que cabe no retângulo (maxW × maxH) mantendo o aspecto do mapa.
+ * size da lib = largura; altura renderizada ≈ size × (MAP_VB_H / MAP_VB_W).
+ */
+const fitMapWidthToBox = (maxW: number, maxH: number): number => {
+  if (maxW <= 0 || maxH <= 0) return 200;
+  const byWidth = maxW;
+  const byHeight = maxH * (MAP_VB_W / MAP_VB_H);
+  return Math.floor(Math.min(byWidth, byHeight));
+};
+
 // Converte coordenadas SVG para % do overlay (viewBox 0 0 612 639, meet em container quadrado)
 const svgToPercent = (x: number, y: number): { top: number; left: number } => {
-  const VB_WIDTH = 612;
-  const VB_HEIGHT = 639;
+  const VB_WIDTH = MAP_VB_W;
+  const VB_HEIGHT = MAP_VB_H;
   const renderedWidthPct = (VB_WIDTH / VB_HEIGHT) * 100;
   const marginLeftPct = (100 - renderedWidthPct) / 2;
   return {
@@ -127,10 +142,9 @@ const geoToSvgPosition = (lat: number, lng: number): { x: number; y: number } | 
   const normalizedLat = (BRAZIL_BOUNDS.latMax - lat) / (BRAZIL_BOUNDS.latMax - BRAZIL_BOUNDS.latMin);
   
   // Converte para coordenadas do SVG (viewBox 0 0 612 639)
-  // Ajustes para alinhar com o mapa SVG
-  const VB_WIDTH = 612;
-  const VB_HEIGHT = 639;
-  
+  const VB_WIDTH = MAP_VB_W;
+  const VB_HEIGHT = MAP_VB_H;
+
   return {
     x: normalizedLng * VB_WIDTH * 0.85 + VB_WIDTH * 0.08,  // Ajuste horizontal
     y: normalizedLat * VB_HEIGHT * 0.92 + VB_HEIGHT * 0.02, // Ajuste vertical
@@ -139,6 +153,29 @@ const geoToSvgPosition = (lat: number, lng: number): { x: number; y: number } | 
 
 const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
   const [selectedState, setSelectedState] = useState<string | null>(null);
+  const mapAreaRef = useRef<HTMLDivElement>(null);
+  const [mapSize, setMapSize] = useState(320);
+
+  useLayoutEffect(() => {
+    const el = mapAreaRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const cs = getComputedStyle(el);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      const w = el.clientWidth - padX;
+      const h = el.clientHeight - padY;
+      if (w < 8 || h < 8) return;
+      const next = fitMapWidthToBox(w, h);
+      setMapSize(Math.max(100, Math.min(next, 900)));
+    };
+
+    update();
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const getStateVolume = (stateCode: string): number => {
     const point = points.find(p => p.state === stateCode);
@@ -195,7 +232,7 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full min-h-0 min-w-0 flex flex-col overflow-x-hidden">
       {/* Header compacto */}
       <div className="px-3 py-2 border-b border-slate-100 shrink-0">
         <div className="flex justify-between items-start">
@@ -224,12 +261,18 @@ const BrazilMap: React.FC<BrazilMapProps> = ({ points, heatPoints = [] }) => {
       </div>
 
 
-      {/* Mapa com indicadores */}
-      <div className="flex-1 flex items-center justify-center p-1 min-h-0 relative">
-        <div className="relative brazil-map">
+      {/* Mapa: ResizeObserver mede a área; size encaixa largura e altura (sem scroll) */}
+      <div
+        ref={mapAreaRef}
+        className="flex-1 min-h-0 min-w-0 overflow-hidden p-1 flex items-center justify-center"
+      >
+        <div
+          className="relative brazil-map shrink-0 max-w-full"
+          style={{ width: mapSize }}
+        >
           <Brazil
             type="select-single"
-            size={400}
+            size={mapSize}
             mapColor="#f1f5f9"
             strokeColor="#94a3b8"
             strokeWidth={0.5}
