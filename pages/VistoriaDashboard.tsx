@@ -125,8 +125,16 @@ const VistoriaDashboard: React.FC<VistoriaDashboardProps> = ({ filter }) => {
 
   if (!data) return null;
 
-  const { kpis, chartData, valorGanho } = data;
+  const { kpis, chartData, valorGanho, totalRegistros } = data;
   const progressWidth = Math.min(valorGanho.percentual, 100);
+  const periodoLabel = new Date(filter.year, filter.month, 1).toLocaleDateString('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  });
+  const semDadosOrcadoRealizado = totalRegistros === 0;
+
+  /** Evita eixo Y colapsar em [0,0] quando não há movimento no período (Recharts some a área). */
+  const yDomainMax = (max: number) => (max <= 0 ? 1 : max * 1.05);
 
   return (
     <div className="space-y-4">
@@ -165,6 +173,16 @@ const VistoriaDashboard: React.FC<VistoriaDashboardProps> = ({ filter }) => {
           <h3 className="text-sm font-bold mb-4" style={{ color: COLORS.black }}>
             Evolução Acumulada Diária: Orçado vs Realizado
           </h3>
+          {semDadosOrcadoRealizado && (
+            <div
+              className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950"
+              role="status"
+            >
+              Não há registros em <span className="font-mono">deals_orcadoxrealizado</span> para{' '}
+              <strong className="capitalize">{periodoLabel}</strong>. O gráfico abaixo mostra apenas a linha do
+              tempo (acumulado zerado) até a origem sincronizar novos deals neste período.
+            </div>
+          )}
           <div className="h-72" style={{ minWidth: 0 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={chartData}>
@@ -182,6 +200,7 @@ const VistoriaDashboard: React.FC<VistoriaDashboardProps> = ({ filter }) => {
                   tickLine={false} 
                   axisLine={false}
                   tickFormatter={(v) => v.toLocaleString('pt-BR')}
+                  domain={[0, yDomainMax]}
                 />
                 <Tooltip
                   content={<VistoriaChartTooltip />}

@@ -37,6 +37,28 @@ const formatDateString = (year: number, month: number, day: number): string => {
   return `${year}-${m}-${d}`;
 };
 
+/**
+ * Data civil (ano/mês/dia) a partir de `start_date_ploomes`.
+ * Não usar `new Date(iso).getDate()` com string só-data (YYYY-MM-DD): em timezones como
+ * America/Sao_Paulo o UTC vira o dia anterior e o gráfico agrupa errado ou some com o mês.
+ */
+const parseCalendarDateFromPloomes = (iso: string | null): { y: number; m: number; d: number } | null => {
+  if (!iso) return null;
+  const datePart = iso.trim().split('T')[0];
+  const parts = datePart.split('-');
+  if (parts.length >= 3) {
+    const y = Number(parts[0]);
+    const mo = Number(parts[1]);
+    const d = Number(parts[2]);
+    if (Number.isFinite(y) && Number.isFinite(mo) && Number.isFinite(d)) {
+      return { y, m: mo - 1, d };
+    }
+  }
+  const dt = new Date(iso);
+  if (Number.isNaN(dt.getTime())) return null;
+  return { y: dt.getUTCFullYear(), m: dt.getUTCMonth(), d: dt.getUTCDate() };
+};
+
 const fetchDealsOrcadoRealizado = async (filter: DashboardFilter): Promise<DealOrcadoRealizado[]> => {
   const startOfMonth = formatDateString(filter.year, filter.month, 1);
   const lastDay = new Date(filter.year, filter.month + 1, 0).getDate();
@@ -131,9 +153,13 @@ const calcularChartData = (deals: DealOrcadoRealizado[], filter: DashboardFilter
 
   for (let dia = 1; dia <= ultimoDiaExibido; dia++) {
     const dealsDoDia = deals.filter(d => {
-      if (!d.start_date_ploomes) return false;
-      const date = new Date(d.start_date_ploomes);
-      return date.getDate() === dia;
+      const cal = parseCalendarDateFromPloomes(d.start_date_ploomes);
+      return (
+        cal !== null &&
+        cal.y === filter.year &&
+        cal.m === filter.month &&
+        cal.d === dia
+      );
     });
 
     const orcadoDia = dealsDoDia.reduce((sum, d) => sum + (d.valor_orcado ?? 0), 0);
